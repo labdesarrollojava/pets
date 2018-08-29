@@ -1,0 +1,12 @@
+entity Owner {
+    name String required
+}
+ 
+entity Pet {
+    name String required,
+    species String required
+}
+ 
+relationship OneToMany {
+    Owner{pet} to Pet{owner}
+}
