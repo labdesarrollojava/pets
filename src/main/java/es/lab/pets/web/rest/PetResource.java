@@ -104,6 +104,20 @@ public class PetResource {
     }
 
     /**
+     * GET  /pets/owners/{ownerId} : get all the pets by owner id.
+     *
+     * @return the ResponseEntity with status 200 (OK) and the list of actions in body
+     */
+    @GetMapping("/pets/owners/{ownerId}")
+    @Timed
+    public List<Pet> getAllPetsForOwner(@PathVariable Long ownerId) {
+    	log.debug("REST request to get all pets for owner : {}", ownerId);
+    	 
+    	List<Pet> actions = petRepository.findByOwnerId(ownerId);
+    	return actions;
+    }
+    
+    /**
      * DELETE  /pets/:id : delete the "id" pet.
      *
      * @param id the id of the pet to delete
