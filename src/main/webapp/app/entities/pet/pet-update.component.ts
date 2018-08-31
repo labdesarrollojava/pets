@@ -31,6 +31,11 @@ export class PetUpdateComponent implements OnInit {
         this.activatedRoute.data.subscribe(({ pet }) => {
             this.pet = pet;
         });
+
+        this.activatedRoute.data.subscribe(({ owner }) => {
+            this.pet.owner = owner;
+        });
+
         this.ownerService.query().subscribe(
             (res: HttpResponse<IOwner[]>) => {
                 this.owners = res.body;

@@ -29,7 +29,7 @@
             <div>
                 <h2 id="page-heading">
                     <span jhiTranslate="petsApp.pet.home.title">Pets</span>
-                    <button id="jh-create-entity" class="btn btn-primary float-right jh-create-entity create-pet" [routerLink]="['/pet/new']">
+                    <button id="jh-create-entity" class="btn btn-primary float-right jh-create-entity create-pet" [routerLink]="['/pet/new',owner.id]">
                         <fa-icon [icon]="'plus'"></fa-icon>
                         <span  jhiTranslate="petsApp.pet.home.createLabel">
                         Create new Pet

@@ -11,6 +11,8 @@ import { PetDetailComponent } from './pet-detail.component';
 import { PetUpdateComponent } from './pet-update.component';
 import { PetDeletePopupComponent } from './pet-delete-dialog.component';
 import { IPet } from 'app/shared/model/pet.model';
+import { IOwner, Owner } from 'app/shared/model/owner.model';
+import { OwnerService } from 'app/entities/owner/owner.service';
 
 @Injectable({ providedIn: 'root' })
 export class PetResolve implements Resolve<IPet> {
@@ -22,6 +24,19 @@ export class PetResolve implements Resolve<IPet> {
             return this.service.find(id).pipe(map((pet: HttpResponse<Pet>) => pet.body));
         }
         return of(new Pet());
+    }
+}
+
+@Injectable({ providedIn: 'root' })
+export class OwnerResolve implements Resolve<IOwner> {
+    constructor(private service: OwnerService) {}
+
+    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
+        const id = route.params['ownerId'] ? route.params['ownerId'] : null;
+        if (id) {
+            return this.service.find(id).pipe(map((owner: HttpResponse<Owner>) => owner.body));
+        }
+        return of(new Owner());
     }
 }
 
@@ -52,6 +67,19 @@ export const petRoute: Routes = [
         component: PetUpdateComponent,
         resolve: {
             pet: PetResolve
+        },
+        data: {
+            authorities: ['ROLE_USER'],
+            pageTitle: 'petsApp.pet.home.title'
+        },
+        canActivate: [UserRouteAccessService]
+    },
+    {
+        path: 'pet/new/:ownerId',
+        component: PetUpdateComponent,
+        resolve: {
+            pet: PetResolve,
+            owner: OwnerResolve
         },
         data: {
             authorities: ['ROLE_USER'],
