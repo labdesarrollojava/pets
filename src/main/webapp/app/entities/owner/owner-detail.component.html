@@ -23,6 +23,9 @@
                 <fa-icon [icon]="'pencil-alt'"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit"> Edit</span>
             </button>
 
+            <br>
+            <br>
+
             <div>
                 <h2 id="page-heading">
                     <span jhiTranslate="petsApp.pet.home.title">Pets</span>
@@ -42,7 +45,6 @@
                         <th><span jhiTranslate="global.field.id">ID</span></th>
                         <th><span jhiTranslate="petsApp.pet.name">Name</span></th>
                         <th><span jhiTranslate="petsApp.pet.species">Species</span></th>
-                        <th><span jhiTranslate="petsApp.pet.owner">Owner</span></th>
                         <th></th>
                         </tr>
                         </thead>
@@ -51,11 +53,6 @@
                             <td><a [routerLink]="['/pet', pet.id, 'view' ]">{{pet.id}}</a></td>
                             <td>{{pet.name}}</td>
                             <td>{{pet.species}}</td>
-                            <td>
-                                <div *ngIf="pet.owner">
-                                    <a [routerLink]="['../owner', pet.owner?.id, 'view' ]" >{{pet.owner?.id}}</a>
-                                </div>
-                            </td>
                             <td class="text-right">
                                 <div class="btn-group flex-btn-group-container">
                                     <button type="submit"

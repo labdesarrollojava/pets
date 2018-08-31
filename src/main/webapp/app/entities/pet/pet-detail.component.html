@@ -16,7 +16,7 @@
                 <dt><span jhiTranslate="petsApp.pet.owner">Owner</span></dt>
                 <dd>
                     <div *ngIf="pet.owner">
-                        <a [routerLink]="['/owner', pet.owner?.id, 'view']">{{pet.owner?.id}}</a>
+                        <a [routerLink]="['/owner', pet.owner?.id, 'view']">{{pet.owner?.name}}</a>
                     </div>
                 </dd>
             </dl>

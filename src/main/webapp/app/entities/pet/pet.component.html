@@ -28,7 +28,7 @@
                 <td>{{pet.species}}</td>
                 <td>
                     <div *ngIf="pet.owner">
-                        <a [routerLink]="['../owner', pet.owner?.id, 'view' ]" >{{pet.owner?.id}}</a>
+                        <a [routerLink]="['../owner', pet.owner?.id, 'view' ]" >{{pet.owner?.name}}</a>
                     </div>
                 </td>
                 <td class="text-right">

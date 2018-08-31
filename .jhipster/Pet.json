@@ -21,7 +21,7 @@
             "relationshipType": "many-to-one",
             "relationshipName": "owner",
             "otherEntityName": "owner",
-            "otherEntityField": "id"
+            "otherEntityField": "name"
         }
     ],
     "changelogDate": "20180829061507",

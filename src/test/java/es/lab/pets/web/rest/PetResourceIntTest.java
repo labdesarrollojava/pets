@@ -242,7 +242,7 @@ public class PetResourceIntTest {
 
         // Create the Pet
 
-        // If the entity doesn't have an ID, it will throw BadRequestAlertException 
+        // If the entity doesn't have an ID, it will be created instead of just being updated
         restPetMockMvc.perform(put("/api/pets")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
             .content(TestUtil.convertObjectToJsonBytes(pet)))
