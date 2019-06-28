@@ -1,58 +1,71 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
 import { HttpResponse, HttpErrorResponse } from '@angular/common/http';
+import { FormBuilder, Validators } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
-
-import { IOwner } from 'app/shared/model/owner.model';
+import { IOwner, Owner } from 'app/shared/model/owner.model';
 import { OwnerService } from './owner.service';
 
 @Component({
-    selector: 'jhi-owner-update',
-    templateUrl: './owner-update.component.html'
+  selector: 'jhi-owner-update',
+  templateUrl: './owner-update.component.html'
 })
 export class OwnerUpdateComponent implements OnInit {
-    private _owner: IOwner;
-    isSaving: boolean;
+  isSaving: boolean;
 
-    constructor(private ownerService: OwnerService, private activatedRoute: ActivatedRoute) {}
+  editForm = this.fb.group({
+    id: [],
+    name: [null, [Validators.required]]
+  });
 
-    ngOnInit() {
-        this.isSaving = false;
-        this.activatedRoute.data.subscribe(({ owner }) => {
-            this.owner = owner;
-        });
-    }
+  constructor(protected ownerService: OwnerService, protected activatedRoute: ActivatedRoute, private fb: FormBuilder) {}
 
-    previousState() {
-        window.history.back();
-    }
+  ngOnInit() {
+    this.isSaving = false;
+    this.activatedRoute.data.subscribe(({ owner }) => {
+      this.updateForm(owner);
+    });
+  }
 
-    save() {
-        this.isSaving = true;
-        if (this.owner.id !== undefined) {
-            this.subscribeToSaveResponse(this.ownerService.update(this.owner));
-        } else {
-            this.subscribeToSaveResponse(this.ownerService.create(this.owner));
-        }
-    }
+  updateForm(owner: IOwner) {
+    this.editForm.patchValue({
+      id: owner.id,
+      name: owner.name
+    });
+  }
 
-    private subscribeToSaveResponse(result: Observable<HttpResponse<IOwner>>) {
-        result.subscribe((res: HttpResponse<IOwner>) => this.onSaveSuccess(), (res: HttpErrorResponse) => this.onSaveError());
-    }
+  previousState() {
+    window.history.back();
+  }
 
-    private onSaveSuccess() {
-        this.isSaving = false;
-        this.previousState();
+  save() {
+    this.isSaving = true;
+    const owner = this.createFromForm();
+    if (owner.id !== undefined) {
+      this.subscribeToSaveResponse(this.ownerService.update(owner));
+    } else {
+      this.subscribeToSaveResponse(this.ownerService.create(owner));
     }
+  }
 
-    private onSaveError() {
-        this.isSaving = false;
-    }
-    get owner() {
-        return this._owner;
-    }
+  private createFromForm(): IOwner {
+    return {
+      ...new Owner(),
+      id: this.editForm.get(['id']).value,
+      name: this.editForm.get(['name']).value
+    };
+  }
 
-    set owner(owner: IOwner) {
-        this._owner = owner;
-    }
+  protected subscribeToSaveResponse(result: Observable<HttpResponse<IOwner>>) {
+    result.subscribe(() => this.onSaveSuccess(), () => this.onSaveError());
+  }
+
+  protected onSaveSuccess() {
+    this.isSaving = false;
+    this.previousState();
+  }
+
+  protected onSaveError() {
+    this.isSaving = false;
+  }
 }

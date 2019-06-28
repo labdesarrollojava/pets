@@ -1,95 +1,111 @@
 /* tslint:disable max-line-length */
 import { TestBed, getTestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpClient, HttpResponse } from '@angular/common/http';
+import { of } from 'rxjs';
+import { take, map } from 'rxjs/operators';
 import { OwnerService } from 'app/entities/owner/owner.service';
-import { Owner } from 'app/shared/model/owner.model';
-import { SERVER_API_URL } from 'app/app.constants';
+import { IOwner, Owner } from 'app/shared/model/owner.model';
 
 describe('Service Tests', () => {
-    describe('Owner Service', () => {
-        let injector: TestBed;
-        let service: OwnerService;
-        let httpMock: HttpTestingController;
+  describe('Owner Service', () => {
+    let injector: TestBed;
+    let service: OwnerService;
+    let httpMock: HttpTestingController;
+    let elemDefault: IOwner;
+    let expectedResult;
+    beforeEach(() => {
+      TestBed.configureTestingModule({
+        imports: [HttpClientTestingModule]
+      });
+      expectedResult = {};
+      injector = getTestBed();
+      service = injector.get(OwnerService);
+      httpMock = injector.get(HttpTestingController);
 
-        beforeEach(() => {
-            TestBed.configureTestingModule({
-                imports: [HttpClientTestingModule]
-            });
-            injector = getTestBed();
-            service = injector.get(OwnerService);
-            httpMock = injector.get(HttpTestingController);
-        });
-
-        describe('Service methods', () => {
-            it('should call correct URL', () => {
-                service.find(123).subscribe(() => {});
-
-                const req = httpMock.expectOne({ method: 'GET' });
-
-                const resourceUrl = SERVER_API_URL + 'api/owners';
-                expect(req.request.url).toEqual(resourceUrl + '/' + 123);
-            });
-
-            it('should create a Owner', () => {
-                service.create(new Owner(null)).subscribe(received => {
-                    expect(received.body.id).toEqual(null);
-                });
-
-                const req = httpMock.expectOne({ method: 'POST' });
-                req.flush({ id: null });
-            });
-
-            it('should update a Owner', () => {
-                service.update(new Owner(123)).subscribe(received => {
-                    expect(received.body.id).toEqual(123);
-                });
-
-                const req = httpMock.expectOne({ method: 'PUT' });
-                req.flush({ id: 123 });
-            });
-
-            it('should return a Owner', () => {
-                service.find(123).subscribe(received => {
-                    expect(received.body.id).toEqual(123);
-                });
-
-                const req = httpMock.expectOne({ method: 'GET' });
-                req.flush({ id: 123 });
-            });
-
-            it('should return a list of Owner', () => {
-                service.query(null).subscribe(received => {
-                    expect(received.body[0].id).toEqual(123);
-                });
-
-                const req = httpMock.expectOne({ method: 'GET' });
-                req.flush([new Owner(123)]);
-            });
-
-            it('should delete a Owner', () => {
-                service.delete(123).subscribe(received => {
-                    expect(received.url).toContain('/' + 123);
-                });
-
-                const req = httpMock.expectOne({ method: 'DELETE' });
-                req.flush(null);
-            });
-
-            it('should propagate not found response', () => {
-                service.find(123).subscribe(null, (_error: any) => {
-                    expect(_error.status).toEqual(404);
-                });
-
-                const req = httpMock.expectOne({ method: 'GET' });
-                req.flush('Invalid request parameters', {
-                    status: 404,
-                    statusText: 'Bad Request'
-                });
-            });
-        });
-
-        afterEach(() => {
-            httpMock.verify();
-        });
+      elemDefault = new Owner(0, 'AAAAAAA');
     });
+
+    describe('Service methods', () => {
+      it('should find an element', async () => {
+        const returnedFromService = Object.assign({}, elemDefault);
+        service
+          .find(123)
+          .pipe(take(1))
+          .subscribe(resp => (expectedResult = resp));
+
+        const req = httpMock.expectOne({ method: 'GET' });
+        req.flush(returnedFromService);
+        expect(expectedResult).toMatchObject({ body: elemDefault });
+      });
+
+      it('should create a Owner', async () => {
+        const returnedFromService = Object.assign(
+          {
+            id: 0
+          },
+          elemDefault
+        );
+        const expected = Object.assign({}, returnedFromService);
+        service
+          .create(new Owner(null))
+          .pipe(take(1))
+          .subscribe(resp => (expectedResult = resp));
+        const req = httpMock.expectOne({ method: 'POST' });
+        req.flush(returnedFromService);
+        expect(expectedResult).toMatchObject({ body: expected });
+      });
+
+      it('should update a Owner', async () => {
+        const returnedFromService = Object.assign(
+          {
+            name: 'BBBBBB'
+          },
+          elemDefault
+        );
+
+        const expected = Object.assign({}, returnedFromService);
+        service
+          .update(expected)
+          .pipe(take(1))
+          .subscribe(resp => (expectedResult = resp));
+        const req = httpMock.expectOne({ method: 'PUT' });
+        req.flush(returnedFromService);
+        expect(expectedResult).toMatchObject({ body: expected });
+      });
+
+      it('should return a list of Owner', async () => {
+        const returnedFromService = Object.assign(
+          {
+            name: 'BBBBBB'
+          },
+          elemDefault
+        );
+        const expected = Object.assign({}, returnedFromService);
+        service
+          .query(expected)
+          .pipe(
+            take(1),
+            map(resp => resp.body)
+          )
+          .subscribe(body => (expectedResult = body));
+        const req = httpMock.expectOne({ method: 'GET' });
+        req.flush([returnedFromService]);
+        httpMock.verify();
+        expect(expectedResult).toContainEqual(expected);
+      });
+
+      it('should delete a Owner', async () => {
+        const rxPromise = service.delete(123).subscribe(resp => (expectedResult = resp.ok));
+
+        const req = httpMock.expectOne({ method: 'DELETE' });
+        req.flush({ status: 200 });
+        expect(expectedResult);
+      });
+    });
+
+    afterEach(() => {
+      httpMock.verify();
+    });
+  });
 });

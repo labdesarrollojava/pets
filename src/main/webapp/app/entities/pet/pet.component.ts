@@ -1,58 +1,65 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { Subscription } from 'rxjs';
+import { filter, map } from 'rxjs/operators';
 import { JhiEventManager, JhiAlertService } from 'ng-jhipster';
 
 import { IPet } from 'app/shared/model/pet.model';
-import { Principal } from 'app/core';
+import { AccountService } from 'app/core';
 import { PetService } from './pet.service';
 
 @Component({
-    selector: 'jhi-pet',
-    templateUrl: './pet.component.html'
+  selector: 'jhi-pet',
+  templateUrl: './pet.component.html'
 })
 export class PetComponent implements OnInit, OnDestroy {
-    pets: IPet[];
-    currentAccount: any;
-    eventSubscriber: Subscription;
+  pets: IPet[];
+  currentAccount: any;
+  eventSubscriber: Subscription;
 
-    constructor(
-        private petService: PetService,
-        private jhiAlertService: JhiAlertService,
-        private eventManager: JhiEventManager,
-        private principal: Principal
-    ) {}
+  constructor(
+    protected petService: PetService,
+    protected jhiAlertService: JhiAlertService,
+    protected eventManager: JhiEventManager,
+    protected accountService: AccountService
+  ) {}
 
-    loadAll() {
-        this.petService.query().subscribe(
-            (res: HttpResponse<IPet[]>) => {
-                this.pets = res.body;
-            },
-            (res: HttpErrorResponse) => this.onError(res.message)
-        );
-    }
+  loadAll() {
+    this.petService
+      .query()
+      .pipe(
+        filter((res: HttpResponse<IPet[]>) => res.ok),
+        map((res: HttpResponse<IPet[]>) => res.body)
+      )
+      .subscribe(
+        (res: IPet[]) => {
+          this.pets = res;
+        },
+        (res: HttpErrorResponse) => this.onError(res.message)
+      );
+  }
 
-    ngOnInit() {
-        this.loadAll();
-        this.principal.identity().then(account => {
-            this.currentAccount = account;
-        });
-        this.registerChangeInPets();
-    }
+  ngOnInit() {
+    this.loadAll();
+    this.accountService.identity().then(account => {
+      this.currentAccount = account;
+    });
+    this.registerChangeInPets();
+  }
 
-    ngOnDestroy() {
-        this.eventManager.destroy(this.eventSubscriber);
-    }
+  ngOnDestroy() {
+    this.eventManager.destroy(this.eventSubscriber);
+  }
 
-    trackId(index: number, item: IPet) {
-        return item.id;
-    }
+  trackId(index: number, item: IPet) {
+    return item.id;
+  }
 
-    registerChangeInPets() {
-        this.eventSubscriber = this.eventManager.subscribe('petListModification', response => this.loadAll());
-    }
+  registerChangeInPets() {
+    this.eventSubscriber = this.eventManager.subscribe('petListModification', response => this.loadAll());
+  }
 
-    private onError(errorMessage: string) {
-        this.jhiAlertService.error(errorMessage, null, null);
-    }
+  protected onError(errorMessage: string) {
+    this.jhiAlertService.error(errorMessage, null, null);
+  }
 }

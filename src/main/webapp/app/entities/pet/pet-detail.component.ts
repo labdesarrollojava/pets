@@ -4,21 +4,21 @@ import { ActivatedRoute } from '@angular/router';
 import { IPet } from 'app/shared/model/pet.model';
 
 @Component({
-    selector: 'jhi-pet-detail',
-    templateUrl: './pet-detail.component.html'
+  selector: 'jhi-pet-detail',
+  templateUrl: './pet-detail.component.html'
 })
 export class PetDetailComponent implements OnInit {
-    pet: IPet;
+  pet: IPet;
 
-    constructor(private activatedRoute: ActivatedRoute) {}
+  constructor(protected activatedRoute: ActivatedRoute) {}
 
-    ngOnInit() {
-        this.activatedRoute.data.subscribe(({ pet }) => {
-            this.pet = pet;
-        });
-    }
+  ngOnInit() {
+    this.activatedRoute.data.subscribe(({ pet }) => {
+      this.pet = pet;
+    });
+  }
 
-    previousState() {
-        window.history.back();
-    }
+  previousState() {
+    window.history.back();
+  }
 }

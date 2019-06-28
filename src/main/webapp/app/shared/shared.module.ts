@@ -1,15 +1,17 @@
 import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { NgbDateAdapter } from '@ng-bootstrap/ng-bootstrap';
-
-import { NgbDateMomentAdapter } from './util/datepicker-adapter';
-import { PetsSharedLibsModule, PetsSharedCommonModule, JhiLoginModalComponent, HasAnyAuthorityDirective } from './';
+import { PetsSharedCommonModule, JhiLoginModalComponent, HasAnyAuthorityDirective } from './';
 
 @NgModule({
-    imports: [PetsSharedLibsModule, PetsSharedCommonModule],
-    declarations: [JhiLoginModalComponent, HasAnyAuthorityDirective],
-    providers: [{ provide: NgbDateAdapter, useClass: NgbDateMomentAdapter }],
-    entryComponents: [JhiLoginModalComponent],
-    exports: [PetsSharedCommonModule, JhiLoginModalComponent, HasAnyAuthorityDirective],
-    schemas: [CUSTOM_ELEMENTS_SCHEMA]
+  imports: [PetsSharedCommonModule],
+  declarations: [JhiLoginModalComponent, HasAnyAuthorityDirective],
+  entryComponents: [JhiLoginModalComponent],
+  exports: [PetsSharedCommonModule, JhiLoginModalComponent, HasAnyAuthorityDirective],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
-export class PetsSharedModule {}
+export class PetsSharedModule {
+  static forRoot() {
+    return {
+      ngModule: PetsSharedModule
+    };
+  }
+}

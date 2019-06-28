@@ -1,24 +1,24 @@
-
 {
-    "petsApp": {
-        "pet" : {
-            "home": {
-                "title": "Pets",
-                "createLabel": "Crear nuevo Pet",
-                "createOrEditLabel": "Crear o editar Pet"
-            },
-            "created": "Un nuevo Pet ha sido creado con el identificador {{ param }}",
-            "updated": "Un Pet ha sido actualizado con el identificador {{ param }}",
-            "deleted": "Un Pet ha sido eliminado con el identificador {{ param }}",
-            "delete": {
-                "question": "¿Seguro que quiere eliminar Pet {{ id }}?"
-            },
-            "detail": {
-                "title": "Pet"
-            },
-            "name": "Name",
-            "species": "Species",
-            "owner": "Owner"
-        }
+  "petsApp": {
+    "pet": {
+      "home": {
+        "title": "Pets",
+        "createLabel": "Crear nuevo Pet",
+        "createOrEditLabel": "Crear o editar Pet",
+        "notFound": "No Pet found"
+      },
+      "created": "Un nuevo Pet ha sido creado con el identificador {{ param }}",
+      "updated": "Un Pet ha sido actualizado con el identificador {{ param }}",
+      "deleted": "Un Pet ha sido eliminado con el identificador {{ param }}",
+      "delete": {
+        "question": "¿Seguro que quiere eliminar Pet {{ id }}?"
+      },
+      "detail": {
+        "title": "Pet"
+      },
+      "name": "Name",
+      "species": "Species",
+      "owner": "Owner"
     }
+  }
 }
