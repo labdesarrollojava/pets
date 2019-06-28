@@ -1,0 +1,29 @@
+{
+    "name": "Owner",
+    "fields": [
+        {
+            "fieldName": "name",
+            "fieldType": "String",
+            "fieldValidateRules": [
+                "required"
+            ]
+        }
+    ],
+    "relationships": [
+        {
+            "relationshipType": "one-to-many",
+            "relationshipName": "pet",
+            "otherEntityName": "pet",
+            "otherEntityRelationshipName": "owner"
+        }
+    ],
+    "changelogDate": "20180829061506",
+    "entityTableName": "owner",
+    "dto": "no",
+    "pagination": "no",
+    "service": "no",
+    "jpaMetamodelFiltering": false,
+    "fluentMethods": true,
+    "clientRootFolder": "",
+    "applications": "*"
+}
