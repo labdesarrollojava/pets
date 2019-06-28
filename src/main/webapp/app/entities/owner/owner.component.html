@@ -10,7 +10,10 @@
     </h2>
     <jhi-alert></jhi-alert>
     <br/>
-    <div class="table-responsive" *ngIf="owners">
+    <div class="alert alert-warning" *ngIf="owners?.length === 0">
+        <span jhiTranslate="petsApp.owner.home.notFound">No owners found</span>
+    </div>
+    <div class="table-responsive" *ngIf="owners?.length > 0">
         <table class="table table-striped">
             <thead>
             <tr>
@@ -24,7 +27,7 @@
                 <td><a [routerLink]="['/owner', owner.id, 'view' ]">{{owner.id}}</a></td>
                 <td>{{owner.name}}</td>
                 <td class="text-right">
-                    <div class="btn-group flex-btn-group-container">
+                    <div class="btn-group">
                         <button type="submit"
                                 [routerLink]="['/owner', owner.id, 'view' ]"
                                 class="btn btn-info btn-sm">
@@ -38,7 +41,7 @@
                             <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
                         </button>
                         <button type="submit"
-                                [routerLink]="['/', { outlets: { popup: 'owner/'+ owner.id + '/delete'} }]"
+                                [routerLink]="['/', 'owner', { outlets: { popup: owner.id + '/delete'} }]"
                                 replaceUrl="true"
                                 queryParamsHandling="merge"
                                 class="btn btn-danger btn-sm">

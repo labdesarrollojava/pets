@@ -10,7 +10,10 @@
     </h2>
     <jhi-alert></jhi-alert>
     <br/>
-    <div class="table-responsive" *ngIf="pets">
+    <div class="alert alert-warning" *ngIf="pets?.length === 0">
+        <span jhiTranslate="petsApp.pet.home.notFound">No pets found</span>
+    </div>
+    <div class="table-responsive" *ngIf="pets?.length > 0">
         <table class="table table-striped">
             <thead>
             <tr>
@@ -32,7 +35,7 @@
                     </div>
                 </td>
                 <td class="text-right">
-                    <div class="btn-group flex-btn-group-container">
+                    <div class="btn-group">
                         <button type="submit"
                                 [routerLink]="['/pet', pet.id, 'view' ]"
                                 class="btn btn-info btn-sm">
@@ -46,7 +49,7 @@
                             <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
                         </button>
                         <button type="submit"
-                                [routerLink]="['/', { outlets: { popup: 'pet/'+ pet.id + '/delete'} }]"
+                                [routerLink]="['/', 'pet', { outlets: { popup: pet.id + '/delete'} }]"
                                 replaceUrl="true"
                                 queryParamsHandling="merge"
                                 class="btn btn-danger btn-sm">

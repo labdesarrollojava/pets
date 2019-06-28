@@ -4,7 +4,7 @@
       "packageName": "es.lab.pets",
       "nativeLanguage": "es"
     },
-    "jhipsterVersion": "5.1.0",
+    "jhipsterVersion": "6.1.2",
     "applicationType": "monolith",
     "baseName": "pets",
     "packageName": "es.lab.pets",
@@ -24,7 +24,7 @@
     "enableSwaggerCodegen": false,
     "jwtSecretKey": "cdb12a3b152f17eedd20bbb02c84816f2e4c33be",
     "clientFramework": "angularX",
-    "useSass": false,
+    "useSass": true,
     "clientPackageManager": "yarn",
     "testFrameworks": [],
     "jhiPrefix": "jhi",
@@ -33,6 +33,10 @@
     "languages": [
       "es",
       "en"
-    ]
+    ],
+    "clientTheme": "none",
+    "entitySuffix": "",
+    "dtoSuffix": "DTO",
+    "otherModules": []
   }
 }

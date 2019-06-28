@@ -1,13 +1,14 @@
 package es.lab.pets.web.rest;
 
-import com.codahale.metrics.annotation.Timed;
 import es.lab.pets.domain.Owner;
 import es.lab.pets.repository.OwnerRepository;
 import es.lab.pets.web.rest.errors.BadRequestAlertException;
-import es.lab.pets.web.rest.util.HeaderUtil;
+
+import io.github.jhipster.web.util.HeaderUtil;
 import io.github.jhipster.web.util.ResponseUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,7 +20,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * REST controller for managing Owner.
+ * REST controller for managing {@link es.lab.pets.domain.Owner}.
  */
 @RestController
 @RequestMapping("/api")
@@ -29,6 +30,9 @@ public class OwnerResource {
 
     private static final String ENTITY_NAME = "owner";
 
+    @Value("${jhipster.clientApp.name}")
+    private String applicationName;
+
     private final OwnerRepository ownerRepository;
 
     public OwnerResource(OwnerRepository ownerRepository) {
@@ -36,14 +40,13 @@ public class OwnerResource {
     }
 
     /**
-     * POST  /owners : Create a new owner.
+     * {@code POST  /owners} : Create a new owner.
      *
-     * @param owner the owner to create
-     * @return the ResponseEntity with status 201 (Created) and with body the new owner, or with status 400 (Bad Request) if the owner has already an ID
-     * @throws URISyntaxException if the Location URI syntax is incorrect
+     * @param owner the owner to create.
+     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new owner, or with status {@code 400 (Bad Request)} if the owner has already an ID.
+     * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("/owners")
-    @Timed
     public ResponseEntity<Owner> createOwner(@Valid @RequestBody Owner owner) throws URISyntaxException {
         log.debug("REST request to save Owner : {}", owner);
         if (owner.getId() != null) {
@@ -51,21 +54,20 @@ public class OwnerResource {
         }
         Owner result = ownerRepository.save(owner);
         return ResponseEntity.created(new URI("/api/owners/" + result.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
+            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
             .body(result);
     }
 
     /**
-     * PUT  /owners : Updates an existing owner.
+     * {@code PUT  /owners} : Updates an existing owner.
      *
-     * @param owner the owner to update
-     * @return the ResponseEntity with status 200 (OK) and with body the updated owner,
-     * or with status 400 (Bad Request) if the owner is not valid,
-     * or with status 500 (Internal Server Error) if the owner couldn't be updated
-     * @throws URISyntaxException if the Location URI syntax is incorrect
+     * @param owner the owner to update.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated owner,
+     * or with status {@code 400 (Bad Request)} if the owner is not valid,
+     * or with status {@code 500 (Internal Server Error)} if the owner couldn't be updated.
+     * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PutMapping("/owners")
-    @Timed
     public ResponseEntity<Owner> updateOwner(@Valid @RequestBody Owner owner) throws URISyntaxException {
         log.debug("REST request to update Owner : {}", owner);
         if (owner.getId() == null) {
@@ -73,30 +75,28 @@ public class OwnerResource {
         }
         Owner result = ownerRepository.save(owner);
         return ResponseEntity.ok()
-            .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, owner.getId().toString()))
+            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, owner.getId().toString()))
             .body(result);
     }
 
     /**
-     * GET  /owners : get all the owners.
+     * {@code GET  /owners} : get all the owners.
      *
-     * @return the ResponseEntity with status 200 (OK) and the list of owners in body
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of owners in body.
      */
     @GetMapping("/owners")
-    @Timed
     public List<Owner> getAllOwners() {
         log.debug("REST request to get all Owners");
         return ownerRepository.findAll();
     }
 
     /**
-     * GET  /owners/:id : get the "id" owner.
+     * {@code GET  /owners/:id} : get the "id" owner.
      *
-     * @param id the id of the owner to retrieve
-     * @return the ResponseEntity with status 200 (OK) and with body the owner, or with status 404 (Not Found)
+     * @param id the id of the owner to retrieve.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the owner, or with status {@code 404 (Not Found)}.
      */
     @GetMapping("/owners/{id}")
-    @Timed
     public ResponseEntity<Owner> getOwner(@PathVariable Long id) {
         log.debug("REST request to get Owner : {}", id);
         Optional<Owner> owner = ownerRepository.findById(id);
@@ -104,17 +104,15 @@ public class OwnerResource {
     }
 
     /**
-     * DELETE  /owners/:id : delete the "id" owner.
+     * {@code DELETE  /owners/:id} : delete the "id" owner.
      *
-     * @param id the id of the owner to delete
-     * @return the ResponseEntity with status 200 (OK)
+     * @param id the id of the owner to delete.
+     * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
     @DeleteMapping("/owners/{id}")
-    @Timed
     public ResponseEntity<Void> deleteOwner(@PathVariable Long id) {
         log.debug("REST request to delete Owner : {}", id);
-
         ownerRepository.deleteById(id);
-        return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id.toString())).build();
+        return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString())).build();
     }
 }

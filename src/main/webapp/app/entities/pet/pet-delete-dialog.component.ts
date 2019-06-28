@@ -8,58 +8,58 @@ import { IPet } from 'app/shared/model/pet.model';
 import { PetService } from './pet.service';
 
 @Component({
-    selector: 'jhi-pet-delete-dialog',
-    templateUrl: './pet-delete-dialog.component.html'
+  selector: 'jhi-pet-delete-dialog',
+  templateUrl: './pet-delete-dialog.component.html'
 })
 export class PetDeleteDialogComponent {
-    pet: IPet;
+  pet: IPet;
 
-    constructor(private petService: PetService, public activeModal: NgbActiveModal, private eventManager: JhiEventManager) {}
+  constructor(protected petService: PetService, public activeModal: NgbActiveModal, protected eventManager: JhiEventManager) {}
 
-    clear() {
-        this.activeModal.dismiss('cancel');
-    }
+  clear() {
+    this.activeModal.dismiss('cancel');
+  }
 
-    confirmDelete(id: number) {
-        this.petService.delete(id).subscribe(response => {
-            this.eventManager.broadcast({
-                name: 'petListModification',
-                content: 'Deleted an pet'
-            });
-            this.activeModal.dismiss(true);
-        });
-    }
+  confirmDelete(id: number) {
+    this.petService.delete(id).subscribe(response => {
+      this.eventManager.broadcast({
+        name: 'petListModification',
+        content: 'Deleted an pet'
+      });
+      this.activeModal.dismiss(true);
+    });
+  }
 }
 
 @Component({
-    selector: 'jhi-pet-delete-popup',
-    template: ''
+  selector: 'jhi-pet-delete-popup',
+  template: ''
 })
 export class PetDeletePopupComponent implements OnInit, OnDestroy {
-    private ngbModalRef: NgbModalRef;
+  protected ngbModalRef: NgbModalRef;
 
-    constructor(private activatedRoute: ActivatedRoute, private router: Router, private modalService: NgbModal) {}
+  constructor(protected activatedRoute: ActivatedRoute, protected router: Router, protected modalService: NgbModal) {}
 
-    ngOnInit() {
-        this.activatedRoute.data.subscribe(({ pet }) => {
-            setTimeout(() => {
-                this.ngbModalRef = this.modalService.open(PetDeleteDialogComponent as Component, { size: 'lg', backdrop: 'static' });
-                this.ngbModalRef.componentInstance.pet = pet;
-                this.ngbModalRef.result.then(
-                    result => {
-                        this.router.navigate([{ outlets: { popup: null } }], { replaceUrl: true, queryParamsHandling: 'merge' });
-                        this.ngbModalRef = null;
-                    },
-                    reason => {
-                        this.router.navigate([{ outlets: { popup: null } }], { replaceUrl: true, queryParamsHandling: 'merge' });
-                        this.ngbModalRef = null;
-                    }
-                );
-            }, 0);
-        });
-    }
+  ngOnInit() {
+    this.activatedRoute.data.subscribe(({ pet }) => {
+      setTimeout(() => {
+        this.ngbModalRef = this.modalService.open(PetDeleteDialogComponent as Component, { size: 'lg', backdrop: 'static' });
+        this.ngbModalRef.componentInstance.pet = pet;
+        this.ngbModalRef.result.then(
+          result => {
+            this.router.navigate(['/pet', { outlets: { popup: null } }]);
+            this.ngbModalRef = null;
+          },
+          reason => {
+            this.router.navigate(['/pet', { outlets: { popup: null } }]);
+            this.ngbModalRef = null;
+          }
+        );
+      }, 0);
+    });
+  }
 
-    ngOnDestroy() {
-        this.ngbModalRef = null;
-    }
+  ngOnDestroy() {
+    this.ngbModalRef = null;
+  }
 }

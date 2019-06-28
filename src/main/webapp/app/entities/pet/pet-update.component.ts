@@ -1,82 +1,103 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
 import { HttpResponse, HttpErrorResponse } from '@angular/common/http';
+import { FormBuilder, Validators } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
+import { filter, map } from 'rxjs/operators';
 import { JhiAlertService } from 'ng-jhipster';
-
-import { IPet } from 'app/shared/model/pet.model';
+import { IPet, Pet } from 'app/shared/model/pet.model';
 import { PetService } from './pet.service';
 import { IOwner } from 'app/shared/model/owner.model';
 import { OwnerService } from 'app/entities/owner';
 
 @Component({
-    selector: 'jhi-pet-update',
-    templateUrl: './pet-update.component.html'
+  selector: 'jhi-pet-update',
+  templateUrl: './pet-update.component.html'
 })
 export class PetUpdateComponent implements OnInit {
-    private _pet: IPet;
-    isSaving: boolean;
+  isSaving: boolean;
 
-    owners: IOwner[];
+  owners: IOwner[];
 
-    constructor(
-        private jhiAlertService: JhiAlertService,
-        private petService: PetService,
-        private ownerService: OwnerService,
-        private activatedRoute: ActivatedRoute
-    ) {}
+  editForm = this.fb.group({
+    id: [],
+    name: [null, [Validators.required]],
+    species: [null, [Validators.required]],
+    owner: []
+  });
 
-    ngOnInit() {
-        this.isSaving = false;
-        this.activatedRoute.data.subscribe(({ pet }) => {
-            this.pet = pet;
-        });
-        this.ownerService.query().subscribe(
-            (res: HttpResponse<IOwner[]>) => {
-                this.owners = res.body;
-            },
-            (res: HttpErrorResponse) => this.onError(res.message)
-        );
+  constructor(
+    protected jhiAlertService: JhiAlertService,
+    protected petService: PetService,
+    protected ownerService: OwnerService,
+    protected activatedRoute: ActivatedRoute,
+    private fb: FormBuilder
+  ) {}
+
+  ngOnInit() {
+    this.isSaving = false;
+    this.activatedRoute.data.subscribe(({ pet }) => {
+      this.updateForm(pet);
+    });
+    this.ownerService
+      .query()
+      .pipe(
+        filter((mayBeOk: HttpResponse<IOwner[]>) => mayBeOk.ok),
+        map((response: HttpResponse<IOwner[]>) => response.body)
+      )
+      .subscribe((res: IOwner[]) => (this.owners = res), (res: HttpErrorResponse) => this.onError(res.message));
+  }
+
+  updateForm(pet: IPet) {
+    this.editForm.patchValue({
+      id: pet.id,
+      name: pet.name,
+      species: pet.species,
+      owner: pet.owner
+    });
+  }
+
+  previousState() {
+    window.history.back();
+  }
+
+  save() {
+    this.isSaving = true;
+    const pet = this.createFromForm();
+    if (pet.id !== undefined) {
+      this.subscribeToSaveResponse(this.petService.update(pet));
+    } else {
+      this.subscribeToSaveResponse(this.petService.create(pet));
     }
+  }
 
-    previousState() {
-        window.history.back();
-    }
+  private createFromForm(): IPet {
+    return {
+      ...new Pet(),
+      id: this.editForm.get(['id']).value,
+      name: this.editForm.get(['name']).value,
+      species: this.editForm.get(['species']).value,
+      owner: this.editForm.get(['owner']).value
+    };
+  }
 
-    save() {
-        this.isSaving = true;
-        if (this.pet.id !== undefined) {
-            this.subscribeToSaveResponse(this.petService.update(this.pet));
-        } else {
-            this.subscribeToSaveResponse(this.petService.create(this.pet));
-        }
-    }
+  protected subscribeToSaveResponse(result: Observable<HttpResponse<IPet>>) {
+    result.subscribe(() => this.onSaveSuccess(), () => this.onSaveError());
+  }
 
-    private subscribeToSaveResponse(result: Observable<HttpResponse<IPet>>) {
-        result.subscribe((res: HttpResponse<IPet>) => this.onSaveSuccess(), (res: HttpErrorResponse) => this.onSaveError());
-    }
+  protected onSaveSuccess() {
+    this.isSaving = false;
+    this.previousState();
+  }
 
-    private onSaveSuccess() {
-        this.isSaving = false;
-        this.previousState();
-    }
+  protected onSaveError() {
+    this.isSaving = false;
+  }
+  protected onError(errorMessage: string) {
+    this.jhiAlertService.error(errorMessage, null, null);
+  }
 
-    private onSaveError() {
-        this.isSaving = false;
-    }
-
-    private onError(errorMessage: string) {
-        this.jhiAlertService.error(errorMessage, null, null);
-    }
-
-    trackOwnerById(index: number, item: IOwner) {
-        return item.id;
-    }
-    get pet() {
-        return this._pet;
-    }
-
-    set pet(pet: IPet) {
-        this._pet = pet;
-    }
+  trackOwnerById(index: number, item: IOwner) {
+    return item.id;
+  }
 }
