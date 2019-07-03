@@ -30,18 +30,21 @@ export class PetResolve implements Resolve<IPet> {
   }
 }
 
-// @Injectable({ providedIn: 'root' })
-// export class OwnerResolve implements Resolve<IOwner> {
-//     constructor(private service: OwnerService) {}
+@Injectable({ providedIn: 'root' })
+export class OwnerResolve implements Resolve<IOwner> {
+  constructor(private service: OwnerService) {}
 
-//     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-//         const id = route.params['ownerId'] ? route.params['ownerId'] : null;
-//         if (id) {
-//             return this.service.find(id).pipe(map((owner: HttpResponse<Owner>) => owner.body));
-//         }
-//         return of(new Owner());
-//     }
-// }
+  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
+    const id = route.params['ownerId'] ? route.params['ownerId'] : null;
+    if (id) {
+      return this.service.find(id).pipe(
+        filter((response: HttpResponse<Owner>) => response.ok),
+        map((owner: HttpResponse<Owner>) => owner.body)
+      );
+    }
+    return of(new Owner());
+  }
+}
 
 export const petRoute: Routes = [
   {
@@ -66,19 +69,20 @@ export const petRoute: Routes = [
     canActivate: [UserRouteAccessService]
   },
 
-  //   {
-  //     path: 'pet/new/:ownerId',
-  //     component: PetUpdateComponent,
-  //     resolve: {
-  //         pet: PetResolve,
-  //         owner: OwnerResolve
-  //     },
-  //     data: {
-  //         authorities: ['ROLE_USER'],
-  //         pageTitle: 'petsApp.pet.home.title'
-  //     },
-  //     canActivate: [UserRouteAccessService]
-  // },
+  {
+    // path: 'pet/new/:ownerId',
+    path: 'new/:ownerId',
+    component: PetUpdateComponent,
+    resolve: {
+      pet: PetResolve,
+      owner: OwnerResolve
+    },
+    data: {
+      authorities: ['ROLE_USER'],
+      pageTitle: 'petsApp.pet.home.title'
+    },
+    canActivate: [UserRouteAccessService]
+  },
 
   {
     path: 'new',

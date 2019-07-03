@@ -15,7 +15,7 @@ import { OwnerService } from 'app/entities/owner';
   templateUrl: './pet-update.component.html'
 })
 export class PetUpdateComponent implements OnInit {
-  pet: IPet;
+  private _pet: IPet;
   isSaving: boolean;
 
   owners: IOwner[];
@@ -24,7 +24,7 @@ export class PetUpdateComponent implements OnInit {
     id: [],
     name: [null, [Validators.required]],
     species: [null, [Validators.required]],
-    owner: []
+    owner: [null, [Validators.required]]
   });
 
   constructor(
@@ -35,29 +35,20 @@ export class PetUpdateComponent implements OnInit {
     private fb: FormBuilder
   ) {}
 
-  //   ngOnInit() {
-  //     this.isSaving = false;
-  //     this.activatedRoute.data.subscribe(({ pet }) => {
-  //         this.pet = pet;
-  //     });
-
-  //     this.activatedRoute.data.subscribe(({ owner }) => {
-  //         this.pet.owner = owner;
-  //     });
-
-  //     this.ownerService.query().subscribe(
-  //         (res: HttpResponse<IOwner[]>) => {
-  //             this.owners = res.body;
-  //         },
-  //         (res: HttpErrorResponse) => this.onError(res.message)
-  //     );
-  // }
   ngOnInit() {
     this.isSaving = false;
     this.activatedRoute.data.subscribe(({ pet }) => {
       this.updateForm(pet);
       this.pet = pet;
     });
+
+    this.activatedRoute.data.subscribe(({ owner }) => {
+      if (owner) {
+        this.pet.owner = owner;
+        this.updateForm(this.pet);
+      }
+    });
+
     this.ownerService
       .query()
       .pipe(
@@ -65,7 +56,28 @@ export class PetUpdateComponent implements OnInit {
         map((response: HttpResponse<IOwner[]>) => response.body)
       )
       .subscribe((res: IOwner[]) => (this.owners = res), (res: HttpErrorResponse) => this.onError(res.message));
+
+    // this.ownerService.query().subscribe(
+    //     (res: HttpResponse<IOwner[]>) => {
+    //         this.owners = res.body;
+    //     },
+    //     (res: HttpErrorResponse) => this.onError(res.message)
+    // );
   }
+  // ngOnInit() {
+  //   this.isSaving = false;
+  //   this.activatedRoute.data.subscribe(({ pet }) => {
+  //     this.updateForm(pet);
+  //     this.pet = pet;
+  //   });
+  //   this.ownerService
+  //     .query()
+  //     .pipe(
+  //       filter((mayBeOk: HttpResponse<IOwner[]>) => mayBeOk.ok),
+  //       map((response: HttpResponse<IOwner[]>) => response.body)
+  //     )
+  //     .subscribe((res: IOwner[]) => (this.owners = res), (res: HttpErrorResponse) => this.onError(res.message));
+  // }
 
   updateForm(pet: IPet) {
     this.editForm.patchValue({
@@ -118,5 +130,13 @@ export class PetUpdateComponent implements OnInit {
 
   trackOwnerById(index: number, item: IOwner) {
     return item.id;
+  }
+
+  get pet() {
+    return this._pet;
+  }
+
+  set pet(pet: IPet) {
+    this._pet = pet;
   }
 }
